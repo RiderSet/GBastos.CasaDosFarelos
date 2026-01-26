@@ -1,4 +1,4 @@
-using CasaDosFarelos.Domain.Entities;
+﻿using CasaDosFarelos.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using src.CasaDosFarelos.Domain.Entities;
 
@@ -23,7 +23,20 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-        modelBuilder.ApplyConfiguration(new VendaItemConfiguration());
+
+        modelBuilder.Entity<Venda>(builder =>
+        {
+            builder.Ignore(v => v.Itens);
+            builder.Ignore(v => v.ValorTotal);
+            builder.HasMany<VendaItem>("_itens")
+                   .WithOne()
+                   .HasForeignKey("VendaId");
+
+            // Força acesso via campo
+            builder.Navigation("_itens")
+                   .UsePropertyAccessMode(PropertyAccessMode.Field);
+        });
+
         base.OnModelCreating(modelBuilder);
     }
 }
