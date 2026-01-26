@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
-namespace CasaDosFarelos.Application.Commands.ClientesCommand.CriarClientePF
-{
-    internal class CriarClientePFCommand
-    {
-    }
-}
+public record CriarClientePFCommand(string Nome, string Email, string Documento, string CPF)
+    : IRequest<Guid>;

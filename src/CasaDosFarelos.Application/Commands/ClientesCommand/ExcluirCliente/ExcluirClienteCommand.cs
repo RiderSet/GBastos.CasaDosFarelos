@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
-namespace CasaDosFarelos.Application.Commands.ClientesCommand.ExcluirCliente
+namespace CasaDosFarelos.Application.Commands.Clientes
 {
-    internal class ExcluirClienteCommand
-    {
-    }
+    public record ExcluirClienteCommand(Guid Id) : IRequest<Unit>;
 }
