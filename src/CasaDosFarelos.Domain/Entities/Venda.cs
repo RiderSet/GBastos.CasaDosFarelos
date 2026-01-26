@@ -10,7 +10,6 @@ public class Venda : Entity
     public IReadOnlyCollection<VendaItem> Itens => _itens;
     private readonly List<VendaItem> _itens = new();
 
-    // ✅ ValorTotal Total calculado
     public decimal ValorTotal => _itens.Sum(i => i.ValorTotal);
 
     private Venda() { }
