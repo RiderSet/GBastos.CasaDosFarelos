@@ -2,51 +2,54 @@
 using CasaDosFarelos.Domain.Entities;
 using MediatR;
 
-namespace CasaDosFarelos.Application.Commands.Clientes
+namespace CasaDosFarelos.Application.Commands.Clientes;
+
+public class AtualizarClienteHandler
+    : IRequestHandler<AtualizarClienteCommand, Unit>
 {
-    public class AtualizarClienteHandler : IRequestHandler<AtualizarClienteCommand, Unit>
+    private readonly IClienteWriteRepository _repository;
+
+    public AtualizarClienteHandler(IClienteWriteRepository repository)
     {
-        private readonly IClienteWriteRepository _repository;
+        _repository = repository;
+    }
 
-        public AtualizarClienteHandler(IClienteWriteRepository repository)
+    public async Task<Unit> Handle(
+        AtualizarClienteCommand request,
+        CancellationToken cancellationToken)
+    {
+        var cliente = await _repository
+            .ObterPorIdAsync(request.Id, cancellationToken);
+
+        if (cliente is null)
+            throw new InvalidOperationException("Cliente não encontrado.");
+
+        switch (cliente)
         {
-            _repository = repository;
+            case ClientePF pf:
+                pf.AtualizarDados(
+                    request.Nome,
+                    request.Email,
+                    request.Documento,
+                    request.CPF ?? throw new InvalidOperationException("CPF é obrigatório")
+                );
+                break;
+
+            case ClientePJ pj:
+                pj.AtualizarDados(
+                    request.Nome,
+                    request.Email,
+                    request.Documento,
+                    request.CNPJ ?? throw new InvalidOperationException("CNPJ é obrigatório")
+                );
+                break;
+
+            default:
+                throw new InvalidOperationException("Tipo de cliente inválido.");
         }
 
-        public async Task<Unit> Handle(AtualizarClienteCommand request, CancellationToken cancellationToken)
-        {
-            Pessoa cliente;
+        await _repository.AtualizarAsync(cliente, cancellationToken);
 
-            if (request.Tipo == "PF")
-            {
-                cliente = new ClientePF
-                {
-                    Id = request.Id,
-                    Nome = request.Nome,
-                    Email = request.Email,
-                    Documento = request.Documento,
-                    CPF = request.CPF ?? string.Empty
-                };
-            }
-            else if (request.Tipo == "PJ")
-            {
-                cliente = new ClientePJ
-                {
-                    Id = request.Id,
-                    Nome = request.Nome,
-                    Email = request.Email,
-                    Documento = request.Documento,
-                    CNPJ = request.CNPJ ?? string.Empty
-                };
-            }
-            else
-            {
-                throw new InvalidOperationException("Tipo de cliente inválido. Deve ser 'PF' ou 'PJ'.");
-            }
-
-            await _repository.AtualizarClienteAsync(cliente, cancellationToken);
-
-            return Unit.Value;
-        }
+        return Unit.Value;
     }
 }

@@ -1,4 +1,5 @@
-﻿using CasaDosFarelos.Domain.Entities;
+﻿using CasaDosFarelos.Api.Contracts.Clientes;
+using CasaDosFarelos.Domain.Entities;
 using CasaDosFarelos.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,18 +25,17 @@ public static class ClienteEndpoints
         return app;
     }
 
-    // CreatePF
+    // CREATE PF
     private static async Task<IResult> CriarClientePF(
         CriarClientePFRequest request,
         AppDbContext context)
     {
-        var cliente = new ClientePF
-        {
-            Nome = request.Nome,
-            Email = request.Email,
-            Documento = request.Documento,
-            CPF = request.CPF
-        };
+        var cliente = new ClientePF(
+            request.Nome,
+            request.Email,
+            request.Documento,
+            request.CPF
+        );
 
         context.Add(cliente);
         await context.SaveChangesAsync();
@@ -43,18 +43,17 @@ public static class ClienteEndpoints
         return Results.Created($"/api/clientes/{cliente.Id}", cliente.Id);
     }
 
-    // CreatePJ
+    // CREATE PJ
     private static async Task<IResult> CriarClientePJ(
         CriarClientePJRequest request,
         AppDbContext context)
     {
-        var cliente = new ClientePJ
-        {
-            Nome = request.Nome,
-            Email = request.Email,
-            Documento = request.Documento,
-            CNPJ = request.CNPJ
-        };
+        var cliente = new ClientePJ(
+            request.Nome,
+            request.Email,
+            request.Documento,
+            request.CNPJ
+        );
 
         context.Add(cliente);
         await context.SaveChangesAsync();
@@ -62,33 +61,33 @@ public static class ClienteEndpoints
         return Results.Created($"/api/clientes/{cliente.Id}", cliente.Id);
     }
 
-    // GetAll
+    // GET ALL
     private static async Task<IResult> ListarClientes(AppDbContext context)
     {
         var clientesPF = context.Set<ClientePF>()
             .AsNoTracking()
-            .Select(c => new ClienteResponse
+            .Select(pf => new ClienteResponse
             {
-                Id = c.Id,
-                Nome = c.Nome,
-                Email = c.Email,
-                Documento = c.Documento,
+                Id = pf.Id,
+                Nome = pf.Nome,
+                Email = pf.Email,
+                Documento = pf.Documento,
                 Tipo = "PF",
-                CPF = c.CPF,
+                CPF = pf.CPF,
                 CNPJ = null
             });
 
         var clientesPJ = context.Set<ClientePJ>()
             .AsNoTracking()
-            .Select(c => new ClienteResponse
+            .Select(pj => new ClienteResponse
             {
-                Id = c.Id,
-                Nome = c.Nome,
-                Email = c.Email,
-                Documento = c.Documento,
+                Id = pj.Id,
+                Nome = pj.Nome,
+                Email = pj.Email,
+                Documento = pj.Documento,
                 Tipo = "PJ",
                 CPF = null,
-                CNPJ = c.CNPJ
+                CNPJ = pj.CNPJ
             });
 
         var clientes = await clientesPF
@@ -98,73 +97,95 @@ public static class ClienteEndpoints
         return Results.Ok(clientes);
     }
 
-    // GetById
+    // GET BY ID
     private static async Task<IResult> ObterClientePorId(
         Guid id,
         AppDbContext context)
     {
-        Pessoa? cliente = await context.Set<ClientePF>().FindAsync(id) as Pessoa ?? await context.Set<ClientePJ>().FindAsync(id) as Pessoa;
+        ClienteResponse? response =
+            await context.Set<ClientePF>()
+                .AsNoTracking()
+                .Where(c => c.Id == id)
+                .Select(pf => new ClienteResponse
+                {
+                    Id = pf.Id,
+                    Nome = pf.Nome,
+                    Email = pf.Email,
+                    Documento = pf.Documento,
+                    Tipo = "PF",
+                    CPF = pf.CPF,
+                    CNPJ = null
+                })
+                .FirstOrDefaultAsync()
+            ??
+            await context.Set<ClientePJ>()
+                .AsNoTracking()
+                .Where(c => c.Id == id)
+                .Select(pj => new ClienteResponse
+                {
+                    Id = pj.Id,
+                    Nome = pj.Nome,
+                    Email = pj.Email,
+                    Documento = pj.Documento,
+                    Tipo = "PJ",
+                    CPF = null,
+                    CNPJ = pj.CNPJ
+                })
+                .FirstOrDefaultAsync();
 
-        if (cliente is null)
-            return Results.NotFound();
-
-        ClienteResponse response = cliente switch
-        {
-            ClientePF pf => new ClienteResponse
-            {
-                Id = pf.Id,
-                Nome = pf.Nome,
-                Email = pf.Email,
-                Documento = pf.Documento,
-                Tipo = "PF",
-                CPF = pf.CPF,
-                CNPJ = null
-            },
-
-            ClientePJ pj => new ClienteResponse
-            {
-                Id = pj.Id,
-                Nome = pj.Nome,
-                Email = pj.Email,
-                Documento = pj.Documento,
-                Tipo = "PJ",
-                CPF = null,
-                CNPJ = pj.CNPJ
-            },
-
-            _ => throw new InvalidOperationException("Tipo de cliente desconhecido")
-        };
-
-        return Results.Ok(response);
+        return response is null
+            ? Results.NotFound()
+            : Results.Ok(response);
     }
 
-    // UpDate
+    // UPDATE (PF ou PJ)
     private static async Task<IResult> AtualizarCliente(
         Guid id,
-        CriarClientePFRequest request,
+        AtualizarClienteRequest request,
         AppDbContext context)
     {
-        var cliente = await context.Set<ClientePF>().FindAsync(id);
+        var clientePF = await context.Set<ClientePF>()
+            .FirstOrDefaultAsync(c => c.Id == id);
 
-        if (cliente is null)
-            return Results.NotFound();
+        if (clientePF is not null)
+        {
+            clientePF.AtualizarDados(
+                request.Nome,
+                request.Email,
+                request.Documento,
+                request.CPF ?? throw new InvalidOperationException("CPF obrigatório")
+            );
 
-        cliente.Nome = request.Nome;
-        cliente.Email = request.Email;
-        cliente.Documento = request.Documento;
-        cliente.CPF = request.CPF;
+            await context.SaveChangesAsync();
+            return Results.NoContent();
+        }
 
-        await context.SaveChangesAsync();
+        var clientePJ = await context.Set<ClientePJ>()
+            .FirstOrDefaultAsync(c => c.Id == id);
 
-        return Results.NoContent();
+        if (clientePJ is not null)
+        {
+            clientePJ.AtualizarDados(
+                request.Nome,
+                request.Email,
+                request.Documento,
+                request.CNPJ ?? throw new InvalidOperationException("CNPJ obrigatório")
+            );
+
+            await context.SaveChangesAsync();
+            return Results.NoContent();
+        }
+
+        return Results.NotFound();
     }
 
-    // Delete
+    // DELETE
     private static async Task<IResult> RemoverCliente(
         Guid id,
         AppDbContext context)
     {
-        var cliente = await context.Set<Pessoa>().FindAsync(id);
+        var cliente = await context.Set<Pessoa>()
+            .FirstOrDefaultAsync(c => c.Id == id);
 
         if (cliente is null)
             return Results.NotFound();

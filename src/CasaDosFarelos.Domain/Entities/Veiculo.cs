@@ -1,9 +1,9 @@
-using CasaDosFarelos.Domain.Entities;
-
-namespace src.CasaDosFarelos.Domain.Entities;
-
-public class Veiculo : Entity
+namespace CasaDosFarelos.Domain.Entities
 {
-    public string Placa { get; set; }
-    public string Modelo { get; set; }
+
+    public class Veiculo : Entity
+    {
+        public string Placa { get; private set; } = string.Empty;
+        public string Modelo { get; private set; } = string.Empty;
+    }
 }

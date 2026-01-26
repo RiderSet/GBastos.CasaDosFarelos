@@ -1,20 +1,21 @@
-﻿using CasaDosFarelos.Domain.Entities;
-
-public class Fornecedor : Pessoa
+﻿namespace CasaDosFarelos.Domain.Entities
 {
-    public List<Produto> Produtos { get; set; }
-
-    private Fornecedor() { }
-
-    public Fornecedor(
-        string nome,
-        string email,
-        string documento,
-        List<Produto> produtos)
+    public class Fornecedor : Pessoa
     {
-        Nome = nome;
-        Email = email;
-        Documento = documento;
-        Produtos = produtos;
+        public List<Produto> Produtos { get; private set; } = new();
+
+        private Fornecedor() { }
+
+        public Fornecedor(
+            string nome,
+            string email,
+            string documento,
+            List<Produto> produtos)
+        {
+            Nome = nome;
+            Email = email;
+            Documento = documento;
+            Produtos = produtos;
+        }
     }
 }

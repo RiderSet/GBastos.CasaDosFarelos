@@ -1,4 +1,5 @@
-﻿using CasaDosFarelos.Api.Endpoints.Produtos;
+﻿using CasaDosFarelos.Api.Endpoints.Clientes;
+using CasaDosFarelos.Api.Endpoints.Produtos;
 using CasaDosFarelos.Api.Endpoints.Relatorios;
 using CasaDosFarelos.Api.Endpoints.Vendas;
 using CasaDosFarelos.Application.Commands.Clientes;
@@ -14,6 +15,7 @@ public static class EndpointExtensions
     public static WebApplication MapApplicationEndpoints(
         this WebApplication app)
     {
+        app.MapClienteEndpoints();
         app.MapRelatoriosEndpoints();
         app.MapVendasEndpoints();
         app.MapProdutosEndpoints();

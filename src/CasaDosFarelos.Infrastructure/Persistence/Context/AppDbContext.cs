@@ -1,6 +1,5 @@
 ﻿using CasaDosFarelos.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using src.CasaDosFarelos.Domain.Entities;
 
 namespace CasaDosFarelos.Infrastructure.Persistence.Context;
 
@@ -11,28 +10,52 @@ public class AppDbContext : DbContext
     {
     }
 
-    public DbSet<ClientePF> ClientesPF => Set<ClientePF>();
-    public DbSet<ClientePJ> ClientesPJ => Set<ClientePJ>();
+    public DbSet<Pessoa> Clientes => Set<Pessoa>();
+
     public DbSet<Funcionario> Funcionarios => Set<Funcionario>();
     public DbSet<Fornecedor> Fornecedores => Set<Fornecedor>();
-    public DbSet<Produto> Produto => Set<Produto>();
-    public DbSet<Veiculo> Veiculo => Set<Veiculo>();
-    public DbSet<Venda> Venda => Set<Venda>();
-    public DbSet<VendaItem> VendaItem => Set<VendaItem>();
+    public DbSet<Produto> Produtos => Set<Produto>();
+    public DbSet<Veiculo> Veiculos => Set<Veiculo>();
+    public DbSet<Venda> Vendas => Set<Venda>();
+    public DbSet<VendaItem> VendaItens => Set<VendaItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
+        modelBuilder.Entity<Pessoa>(builder =>
+        {
+            builder.ToTable("Clientes");
+
+            builder.HasKey(c => c.Id);
+
+            builder.Property(c => c.Nome)
+                   .IsRequired()
+                   .HasMaxLength(150);
+
+            builder.Property(c => c.Email)
+                   .IsRequired()
+                   .HasMaxLength(150);
+
+            builder.Property(c => c.Documento)
+                   .IsRequired()
+                   .HasMaxLength(20);
+
+            builder
+                .HasDiscriminator<string>("Tipo")
+                .HasValue<ClientePF>("PF")
+                .HasValue<ClientePJ>("PJ");
+        });
+
         modelBuilder.Entity<Venda>(builder =>
         {
             builder.Ignore(v => v.Itens);
             builder.Ignore(v => v.ValorTotal);
+
             builder.HasMany<VendaItem>("_itens")
                    .WithOne()
                    .HasForeignKey("VendaId");
 
-            // Força acesso via campo
             builder.Navigation("_itens")
                    .UsePropertyAccessMode(PropertyAccessMode.Field);
         });

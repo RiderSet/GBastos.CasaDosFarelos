@@ -14,7 +14,7 @@ namespace CasaDosFarelos.Application.Commands.Clientes.Handlers
 
         public async Task<Unit> Handle(ExcluirClienteCommand request, CancellationToken cancellationToken)
         {
-            await _repository.ExcluirClienteAsync(request.Id, cancellationToken);
+            await _repository.ExcluirAsync(request.Id, cancellationToken);
             return Unit.Value;
         }
     }

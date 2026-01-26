@@ -4,17 +4,16 @@ namespace CasaDosFarelos.Domain.Entities;
 
 public class Funcionario : Pessoa
 {
-    public string Email { get; private set; }
-    public string Documento { get; private set; }
     public Cargo Cargo { get; private set; }
 
-    private Funcionario() { }
+    protected Funcionario() { }
 
     public Funcionario(
         string nome,
         string email,
         string documento,
-        Cargo cargo)
+        Cargo cargo
+    )
     {
         Nome = nome;
         Email = email;

@@ -4,9 +4,10 @@ namespace CasaDosFarelos.Application.Interfaces
 {
     public interface IClienteWriteRepository
     {
-        Task<Guid> CriarClientePFAsync(ClientePF cliente, CancellationToken cancellationToken);
-        Task<Guid> CriarClientePJAsync(ClientePJ cliente, CancellationToken cancellationToken);
-        Task AtualizarClienteAsync(Pessoa cliente, CancellationToken cancellationToken);
-        Task ExcluirClienteAsync(Guid id, CancellationToken cancellationToken);
+        Task<Guid> AdicionarAsync(Pessoa cliente, CancellationToken cancellationToken);
+        Task AtualizarAsync(Pessoa cliente, CancellationToken cancellationToken);
+        Task ExcluirAsync(Guid id, CancellationToken cancellationToken);
+
+        Task<Pessoa?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken);
     }
 }

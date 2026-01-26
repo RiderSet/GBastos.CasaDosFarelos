@@ -1,42 +1,52 @@
-﻿using CasaDosFarelos.Application.Interfaces;
-using CasaDosFarelos.Domain.Entities;
+﻿using CasaDosFarelos.Domain.Entities;
+using CasaDosFarelos.Application.Interfaces;
 using CasaDosFarelos.Infrastructure.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 
-namespace CasaDosFarelos.Infrastructure.Repositories
+public class ClienteWriteRepository : IClienteWriteRepository
 {
-    public class ClienteWriteRepository : IClienteWriteRepository
+    private readonly AppDbContext _context;
+
+    public ClienteWriteRepository(AppDbContext context)
     {
-        private readonly AppDbContext _context;
-        public ClienteWriteRepository(AppDbContext context) => _context = context;
+        _context = context;
+    }
 
-        public async Task<Guid> CriarClientePFAsync(ClientePF cliente, CancellationToken cancellationToken)
-        {
-            _context.Add(cliente);
-            await _context.SaveChangesAsync(cancellationToken);
-            return cliente.Id;
-        }
+    public async Task<Guid> AdicionarAsync(
+        Pessoa cliente,
+        CancellationToken cancellationToken)
+    {
+        _context.Add(cliente);
+        await _context.SaveChangesAsync(cancellationToken);
+        return cliente.Id;
+    }
 
-        public async Task<Guid> CriarClientePJAsync(ClientePJ cliente, CancellationToken cancellationToken)
-        {
-            _context.Add(cliente);
-            await _context.SaveChangesAsync(cancellationToken);
-            return cliente.Id;
-        }
+    public async Task AtualizarAsync(
+        Pessoa cliente,
+        CancellationToken cancellationToken)
+    {
+        _context.Update(cliente);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 
-        public async Task AtualizarClienteAsync(Pessoa cliente, CancellationToken cancellationToken)
-        {
-            _context.Update(cliente);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+    public async Task ExcluirAsync(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var cliente = await ObterPorIdAsync(id, cancellationToken);
 
-        public async Task ExcluirClienteAsync(Guid id, CancellationToken cancellationToken)
-        {
-            var cliente = await _context.Set<Pessoa>().FindAsync(new object[] { id }, cancellationToken);
-            if (cliente != null)
-            {
-                _context.Remove(cliente);
-                await _context.SaveChangesAsync(cancellationToken);
-            }
-        }
+        if (cliente is null)
+            throw new InvalidOperationException("Cliente não encontrado.");
+
+        _context.Remove(cliente);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<Pessoa?> ObterPorIdAsync(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        return await _context.Set<Pessoa>()
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 }
