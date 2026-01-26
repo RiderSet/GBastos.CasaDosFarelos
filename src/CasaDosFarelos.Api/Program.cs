@@ -20,12 +20,15 @@ builder.Services.AddAuthorization();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CriarVendaCommand).Assembly));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConn")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConn")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IVendaRepository, VendaRepository>();
 builder.Services.AddScoped<IRelatorioVendasHandler, RelatorioVendasHandler>();
+builder.Services.AddScoped<IClienteReadRepository, ClienteReadRepository>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ListarClientesQuery).Assembly));
 
 var app = builder.Build();
 

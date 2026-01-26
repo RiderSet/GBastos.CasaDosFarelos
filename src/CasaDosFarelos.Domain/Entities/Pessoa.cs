@@ -2,9 +2,9 @@ namespace CasaDosFarelos.Domain.Entities;
 
 public abstract class Pessoa: Entity
 {
-    public string Nome { get; protected set; }
-    public string Email { get; protected set; }
-    public string Documento { get; protected set; }
+    public string Nome { get; set; }
+    public string Email { get; set; }
+    public string Documento { get; set; }
 }
 
 public class ClientePF : Pessoa

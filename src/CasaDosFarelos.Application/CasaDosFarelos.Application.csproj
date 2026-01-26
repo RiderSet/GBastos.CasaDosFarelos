@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\ClientesCommand\" />
     <Folder Include="Commands\FornecedorCommand\Handler\" />
   </ItemGroup>
 

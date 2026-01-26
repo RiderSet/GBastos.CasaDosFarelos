@@ -1,19 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using CasaDosFarelos.Infrastructure.Persistence.Context;
+using Microsoft.Extensions.Configuration;
 
-namespace CasaDosFarelos.Infrastructure.Persistence;
-
-public class AppDbContextFactory
-    : IDesignTimeDbContextFactory<AppDbContext>
+namespace CasaDosFarelos.Infrastructure.Persistence.Context
 {
-    public AppDbContext CreateDbContext(string[] args)
+    public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
-        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+        public AppDbContext CreateDbContext(string[] args)
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
 
-        optionsBuilder.UseSqlServer(
-            "Server=KILLWANGY;Database=CasaDosFarelos;Trusted_Connection=True;TrustServerCertificate=True");
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
-        return new AppDbContext(optionsBuilder.Options);
+            optionsBuilder.UseSqlServer(
+                configuration.GetConnectionString("DefaultConn"));
+
+            return new AppDbContext(optionsBuilder.Options);
+        }
     }
 }
