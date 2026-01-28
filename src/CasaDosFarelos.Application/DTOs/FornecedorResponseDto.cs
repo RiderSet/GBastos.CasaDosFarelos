@@ -13,23 +13,12 @@ public class FornecedorResponseDto
         string nome,
         string email,
         string documento,
-        List<Produto> produtos)
+        List<Produto>? produtos)
     {
         Id = id;
         Nome = nome;
         Email = email;
         Documento = documento;
         Produtos = produtos;
-    }
-
-    internal FornecedorResponseDto UpdateName(string nome)
-    {
-        return new FornecedorResponseDto(
-            id: Id,
-            nome: nome,
-            email: Email,
-            documento: Documento,
-            produtos: Produtos
-        );
     }
 }

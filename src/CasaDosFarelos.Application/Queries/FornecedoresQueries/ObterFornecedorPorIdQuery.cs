@@ -1,7 +1,14 @@
-﻿using CasaDosFarelos.Application.DTOs;
-using MediatR;
+﻿using MediatR;
+using CasaDosFarelos.Domain.Entities;
 
 namespace CasaDosFarelos.Application.Queries.Fornecedores.ObterFornecedorPorId;
 
-public record ObterFornecedorPorIdQuery(Guid Id)
-    : IRequest<FornecedorResponseDto?>;
+public sealed class ObterFornecedorPorIdQuery : IRequest<Fornecedor?>
+{
+    public Guid Id { get; }
+
+    public ObterFornecedorPorIdQuery(Guid id)
+    {
+        Id = id;
+    }
+}

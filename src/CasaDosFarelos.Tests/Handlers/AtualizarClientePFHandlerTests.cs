@@ -1,5 +1,4 @@
-﻿using CasaDosFarelos.Application.Commands.FornecedorCommand.AtualizarFornecedor;
-using CasaDosFarelos.Application.Interfaces.Fornecedores;
+﻿using CasaDosFarelos.Application.Interfaces.Fornecedores;
 using CasaDosFarelos.Domain.Entities;
 using Moq;
 
@@ -27,12 +26,26 @@ public class AtualizarFornecedorPFHandlerTests
     {
         // Arrange
         var produtoId = Guid.NewGuid();
+        var fornecedorId = Guid.NewGuid();
 
         var produtos = new List<Produto>
     {
         Produto.Add("Produto Teste", 151)
     };
 
+        var fornecedorExistente = new Fornecedor(
+            "Fornecedor Original",
+            "original@teste.com",
+            "123456789",
+            new List<Produto>()
+        );
+
+        // Configura mock do read repo para retornar fornecedor existente
+        _repoReadMock
+            .Setup(r => r.GetByIdAsync(fornecedorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(fornecedorExistente);
+
+        // Configura mock do produto repo
         _produtoRepoMock
             .Setup(r => r.ObterPorIdsAsync(
                 It.IsAny<IEnumerable<Guid>>(),
@@ -41,7 +54,7 @@ public class AtualizarFornecedorPFHandlerTests
 
         var command = new AtualizarFornecedorCommand
         {
-            Id = Guid.NewGuid(),
+            Id = fornecedorId,
             Nome = "Fornecedor Atualizado",
             Email = "fornecedor@teste.com",
             Documento = "123456789",
@@ -54,7 +67,10 @@ public class AtualizarFornecedorPFHandlerTests
         // Assert
         _repoWriteMock.Verify(
             r => r.UpdateAsync(
-                It.Is<Fornecedor>(f => f.Nome == "Fornecedor Atualizado"),
+                It.Is<Fornecedor>(f =>
+                    f.Id == fornecedorId &&
+                    f.Nome == "Fornecedor Atualizado" &&
+                    f.Email == "fornecedor@teste.com"),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }

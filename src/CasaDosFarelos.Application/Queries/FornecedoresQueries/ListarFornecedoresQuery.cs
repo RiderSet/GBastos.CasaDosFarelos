@@ -1,7 +1,7 @@
-﻿using CasaDosFarelos.Application.DTOs;
+﻿using CasaDosFarelos.Domain.Entities;
 using MediatR;
 
 namespace CasaDosFarelos.Application.Queries.FornecedoresQueries
 {
-    public class ListarFornecedoresQuery : IRequest<List<FornecedorResponseDto>> { }
+    public sealed class ListarFornecedoresQuery : IRequest<List<Fornecedor>> { }
 }

@@ -1,122 +1,73 @@
 using CasaDosFarelos.Api.Endpoints;
-using CasaDosFarelos.Application.Commands.ClientesCommand.CriarClientePJ;
-using CasaDosFarelos.Application.Commands.FornecedorCommand.AtualizarFornecedor;
-using CasaDosFarelos.Application.Commands.RelatoriosCommand;
-using CasaDosFarelos.Application.Commands.Vendas;
-using CasaDosFarelos.Application.Interfaces.Cliente.PF;
+using CasaDosFarelos.Application.Interfaces.Cliente;
+using CasaDosFarelos.Application.Interfaces.Cliente.PJ;
 using CasaDosFarelos.Application.Interfaces.Fornecedores;
-using CasaDosFarelos.Application.Interfaces.Venda;
-using CasaDosFarelos.Application.Validators;
-using CasaDosFarelos.Domain.Interfaces;
 using CasaDosFarelos.Infrastructure.Persistence.Context;
-using CasaDosFarelos.Infrastructure.Persistence.UnitOfWork;
 using CasaDosFarelos.Infrastructure.Repositories;
-using FluentValidation;
-using MediatR;
+using CasaDosFarelos.Infrastructure.Repositories.Clientes;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using System.Data;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// -----------------------------
-// Swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "CasaDosFarelos API",
-        Version = "v1"
-    });
-
-    var securityScheme = new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "JWT Authorization header usando Bearer",
-        Reference = new OpenApiReference
-        {
-            Type = ReferenceType.SecurityScheme,
-            Id = "Bearer"
-        }
-    };
-
-    c.AddSecurityDefinition("Bearer", securityScheme);
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        { securityScheme, Array.Empty<string>() }
-    });
-});
-
-// -----------------------------
-// Auth
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters =
-            JwtConfig.TokenValidationParameters(builder.Configuration);
-    });
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("Gerente", policy =>
-        policy.RequireRole("Gerente"));
-});
-
-// -----------------------------
-// FluentValidation + MediatR
-builder.Services.AddValidatorsFromAssemblyContaining<
-    AtualizarFornecedorPFCommandValidator>();
-
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
-    typeof(AtualizarFornecedorCommandPF).Assembly,
-    typeof(CriarVendaCommand).Assembly,
-    typeof(ListarClientesQuery).Assembly,
-    typeof(CriarClientePJCommand).Assembly
-));
-
-// Pipeline de validação automática
-builder.Services.AddTransient(
-    typeof(IPipelineBehavior<,>),
-    typeof(ValidationBehavior<,>)
-);
-
-// -----------------------------
-// Infra
+// ===============================
+// Configuração do DbContext
+// ===============================
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConn")));
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConn"));
+});
 
-builder.Services.AddTransient<IDbConnection>(_ =>
-    new SqlConnection(
-        builder.Configuration.GetConnectionString("DefaultConn")));
+builder.Services.AddScoped<IDbConnection>(sp =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConn");
+    return new SqlConnection(connectionString);
+});
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<IVendaRepository, VendaRepository>();
-builder.Services.AddScoped<IClienteReadPFRepository, ClienteReadRepository>();
-builder.Services.AddScoped<IRelatorioVendasHandler, RelatorioVendasHandler>();
+// ===============================
+// Registro dos Repositórios
+// ===============================
+
+// Produtos
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+
+// Fornecedores
 builder.Services.AddScoped<IFornecedorReadRepository, FornecedorReadRepository>();
 builder.Services.AddScoped<IFornecedorWriteRepository, FornecedorWriteRepository>();
 
-// -----------------------------
+// Clientes PF/PJ
+builder.Services.AddScoped<IClienteWritePFRepository, ClienteWritePFRepository>();
+builder.Services.AddScoped<IClienteWritePJRepository, ClienteWritePJRepository>();
+builder.Services.AddScoped<IClienteReadRepository, ClienteReadRepository>();
+
+// ===============================
+// Registro do MediatR
+// ===============================
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
+});
+
+// ===============================
+// Adicionando Minimal API services
+// ===============================
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
+// ===============================
+// Configuração Swagger
+// ===============================
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseHttpsRedirection();
 
 app.MapApplicationEndpoints();
 

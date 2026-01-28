@@ -1,6 +1,4 @@
-﻿using CasaDosFarelos.Application.Commands.FornecedorCommand.AtualizarFornecedor;
-using CasaDosFarelos.Application.Interfaces.Fornecedores;
-using CasaDosFarelos.Application.Mappers;
+﻿using CasaDosFarelos.Application.Interfaces.Fornecedores;
 using MediatR;
 
 public sealed class AtualizarFornecedorHandler
@@ -21,13 +19,10 @@ public sealed class AtualizarFornecedorHandler
         AtualizarFornecedorCommand command,
         CancellationToken ct)
     {
-        var fornecedorDto = await _readRepo.GetByIdAsync(command.Id, ct)
-            ?? throw new KeyNotFoundException("Fornecedor PF não encontrado");
+        var fornecedor = await _readRepo.GetByIdAsync(command.Id, ct)
+            ?? throw new KeyNotFoundException("Fornecedor não encontrado");
 
-        fornecedorDto.UpdateName(command.Nome);
-        var produtos = fornecedorDto.Produtos;
-
-        var fornecedor = Fornecedor_To_FornecedorResponseDto.ToEntity(fornecedorDto, produtos);
+        fornecedor.UpdateName(command.Nome);
 
         await _writeRepo.UpdateAsync(fornecedor, ct);
 

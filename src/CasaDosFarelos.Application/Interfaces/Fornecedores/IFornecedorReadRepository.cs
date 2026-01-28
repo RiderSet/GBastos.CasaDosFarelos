@@ -1,7 +1,9 @@
-﻿namespace CasaDosFarelos.Application.Interfaces.Fornecedores;
+﻿using CasaDosFarelos.Domain.Entities;
+
+namespace CasaDosFarelos.Application.Interfaces.Fornecedores;
 
 public interface IFornecedorReadRepository
 {
-    Task<List<FornecedorResponseDto>> GetAllAsync(CancellationToken cancellationToken);
-    Task<FornecedorResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<List<Fornecedor>> GetAllAsync(CancellationToken cancellationToken);
+    Task<Fornecedor?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 }

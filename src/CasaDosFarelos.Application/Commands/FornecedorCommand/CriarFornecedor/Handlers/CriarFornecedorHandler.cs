@@ -1,6 +1,5 @@
 ﻿using CasaDosFarelos.Application.Commands.FornecedorCommand.CriarFornecedor;
 using CasaDosFarelos.Application.Interfaces.Fornecedores;
-using CasaDosFarelos.Application.Interfaces.Produtos;
 using CasaDosFarelos.Domain.Entities;
 using MediatR;
 

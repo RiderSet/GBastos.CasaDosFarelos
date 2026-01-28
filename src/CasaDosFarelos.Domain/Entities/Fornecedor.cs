@@ -10,12 +10,23 @@
             string nome,
             string email,
             string documento,
-            List<Produto> produtos)
+            IEnumerable<Produto> produtos)
         {
+            Id = Guid.NewGuid();
             Nome = nome;
             Email = email;
             Documento = documento;
-            Produtos = produtos;
+            Produtos.AddRange(produtos);
+        }
+
+        public Fornecedor UpdateName(string nome)
+        {
+            return new Fornecedor(
+                nome: Nome,
+                email: Email,
+                documento: Documento,
+                produtos: Produtos
+            );
         }
     }
 }

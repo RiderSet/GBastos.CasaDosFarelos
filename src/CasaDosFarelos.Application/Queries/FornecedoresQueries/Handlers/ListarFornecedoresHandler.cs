@@ -1,10 +1,11 @@
 ﻿using CasaDosFarelos.Application.Interfaces.Fornecedores;
+using CasaDosFarelos.Domain.Entities;
 using MediatR;
 
 namespace CasaDosFarelos.Application.Queries.FornecedoresQueries.Handlers;
 
     public class ListarFornecedoresHandler
-    : IRequestHandler<ListarFornecedoresQuery, List<FornecedorResponseDto>>
+    : IRequestHandler<ListarFornecedoresQuery, List<Fornecedor>>
 {
     private readonly IFornecedorReadRepository _repository;
 
@@ -13,7 +14,7 @@ namespace CasaDosFarelos.Application.Queries.FornecedoresQueries.Handlers;
         _repository = repository;
     }
 
-    public Task<List<FornecedorResponseDto>> Handle(
+    public Task<List<Fornecedor>> Handle(
         ListarFornecedoresQuery request,
         CancellationToken cancellationToken)
     {

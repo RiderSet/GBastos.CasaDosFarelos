@@ -14,7 +14,7 @@ public class FornecedorReadRepository : IFornecedorReadRepository
         _connection = connection;
     }
 
-    public async Task<List<FornecedorResponseDto>> GetAllAsync(
+    public async Task<List<Fornecedor>> GetAllAsync(
         CancellationToken cancellationToken)
     {
         const string sql = """
@@ -26,16 +26,15 @@ public class FornecedorReadRepository : IFornecedorReadRepository
         LEFT JOIN Produtos p ON p.Id = fp.ProdutoId
         """;
 
-        var lookup = new Dictionary<Guid, FornecedorResponseDto>();
+        var lookup = new Dictionary<Guid, Fornecedor>();
 
-        await _connection.QueryAsync<FornecedorFlat, Produto, FornecedorResponseDto>(
+        await _connection.QueryAsync<FornecedorFlat, Produto, Fornecedor>(
             sql,
             (f, produto) =>
             {
                 if (!lookup.TryGetValue(f.Id, out var fornecedor))
                 {
-                    fornecedor = new FornecedorResponseDto(
-                        f.Id,
+                    fornecedor = new Fornecedor(
                         f.Nome,
                         f.Email,
                         f.Documento,
@@ -55,7 +54,7 @@ public class FornecedorReadRepository : IFornecedorReadRepository
         return lookup.Values.ToList();
     }
 
-    public async Task<FornecedorResponseDto?> GetByIdAsync(
+    public async Task<Fornecedor?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken)
     {

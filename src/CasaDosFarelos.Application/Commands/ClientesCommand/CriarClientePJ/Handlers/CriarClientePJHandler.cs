@@ -23,6 +23,6 @@ public class CriarClientePJHandler
             request.CNPJ
         );
 
-        return _repository.AddAsync(cliente, cancellationToken);
+        return (Task<Guid>)_repository.AddAsync(cliente, cancellationToken);
     }
 }

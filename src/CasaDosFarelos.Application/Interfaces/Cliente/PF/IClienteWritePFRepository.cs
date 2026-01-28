@@ -4,8 +4,8 @@ namespace CasaDosFarelos.Application.Interfaces.Cliente
 {
     public interface IClienteWritePFRepository
     {
-        Task<Guid> AddAsync(ClientePF cliente, CancellationToken cancellationToken);
-        Task UpdateAsync(ClientePF cliente, CancellationToken cancellationToken);
-        Task RemoveAsync(Guid id, CancellationToken cancellationToken);
+        Task AddAsync(ClientePF cliente, CancellationToken ct);
+        Task UpdateAsync(ClientePF cliente, CancellationToken ct);
+        Task DeleteAsync(ClientePF cliente, CancellationToken ct);
     }
 }

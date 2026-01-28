@@ -1,5 +1,4 @@
-﻿using CasaDosFarelos.Application.Commands.FornecedorCommand.AtualizarFornecedor;
-using FluentValidation;
+﻿using FluentValidation;
 
 public class AtualizarFornecedorPFCommandValidator : AbstractValidator<AtualizarFornecedorCommandPF>
 {
