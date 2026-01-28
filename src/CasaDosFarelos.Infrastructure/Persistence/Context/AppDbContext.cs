@@ -6,12 +6,9 @@ namespace CasaDosFarelos.Infrastructure.Persistence.Context;
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options)
-    {
-    }
+        : base(options) { }
 
     public DbSet<Pessoa> Clientes => Set<Pessoa>();
-
     public DbSet<Funcionario> Funcionarios => Set<Funcionario>();
     public DbSet<Fornecedor> Fornecedores => Set<Fornecedor>();
     public DbSet<Produto> Produtos => Set<Produto>();
@@ -21,12 +18,12 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-
+        // ==========================
+        // Configuração ClientePF / ClientePJ usando TPH
+        // ==========================
         modelBuilder.Entity<Pessoa>(builder =>
         {
-            builder.ToTable("Clientes");
-
+            builder.ToTable("Clientes"); // UMA tabela só para todos
             builder.HasKey(c => c.Id);
 
             builder.Property(c => c.Nome)
@@ -41,12 +38,15 @@ public class AppDbContext : DbContext
                    .IsRequired()
                    .HasMaxLength(20);
 
-            builder
-                .HasDiscriminator<string>("Tipo")
-                .HasValue<ClientePF>("PF")
-                .HasValue<ClientePJ>("PJ");
+            // Discriminador
+            builder.HasDiscriminator<string>("Tipo")
+                   .HasValue<ClientePF>("PF")
+                   .HasValue<ClientePJ>("PJ");
         });
 
+        // ==========================
+        // Configuração Venda / VendaItem
+        // ==========================
         modelBuilder.Entity<Venda>(builder =>
         {
             builder.Ignore(v => v.Itens);

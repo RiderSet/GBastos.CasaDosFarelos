@@ -10,7 +10,7 @@ public class ClientePFConfiguration : IEntityTypeConfiguration<ClientePF>
     {
         builder.ToTable("ClientesPF");
 
-        builder.HasKey(c => c.Id);
+      //  builder.HasKey(c => c.Id);
 
         builder.Property(c => c.Nome)
                .HasMaxLength(150)

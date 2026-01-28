@@ -8,15 +8,16 @@ namespace CasaDosFarelos.Infrastructure.Persistence.Context
     {
         public AppDbContext CreateDbContext(string[] args)
         {
+            // Pega o caminho do projeto API
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false)
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..\\CasaDosFarelos.Api"))
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            var connectionString = configuration.GetConnectionString("DefaultConn");
 
-            optionsBuilder.UseSqlServer(
-                configuration.GetConnectionString("DefaultConn"));
+            optionsBuilder.UseSqlServer(connectionString);
 
             return new AppDbContext(optionsBuilder.Options);
         }

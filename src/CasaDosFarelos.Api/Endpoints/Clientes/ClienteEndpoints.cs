@@ -11,7 +11,7 @@ public static class ClienteEndpoints
         this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/clientes")
-                       .RequireAuthorization();
+                         .RequireAuthorization();
 
         group.MapPost("/pf", CriarClientePF);
         group.MapPost("/pj", CriarClientePJ);

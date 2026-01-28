@@ -8,7 +8,7 @@ public class ClientePJConfiguration : IEntityTypeConfiguration<ClientePJ>
     {
         builder.ToTable("ClientesPJ");
 
-        builder.HasKey(c => c.Id);
+      //  builder.HasKey(c => c.Id);
 
         builder.Property(c => c.Nome)
                .HasMaxLength(150)
