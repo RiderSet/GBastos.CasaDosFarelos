@@ -1,5 +1,4 @@
-﻿using CasaDosFarelos.Application.DTOs;
-using CasaDosFarelos.Application.Interfaces;
+﻿using CasaDosFarelos.Application.Interfaces.Fornecedores;
 using MediatR;
 
 namespace CasaDosFarelos.Application.Queries.Fornecedores.ObterFornecedorPorId;
@@ -18,6 +17,6 @@ public class ObterFornecedorPorIdHandler
         ObterFornecedorPorIdQuery request,
         CancellationToken cancellationToken)
     {
-        return _repository.ObterPorIdAsync(request.Id, cancellationToken);
+        return _repository.GetByIdAsync(request.Id, cancellationToken);
     }
 }

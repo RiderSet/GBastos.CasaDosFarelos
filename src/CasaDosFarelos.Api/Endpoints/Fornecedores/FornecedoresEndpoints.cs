@@ -1,4 +1,3 @@
-using CasaDosFarelos.Application.Commands.FornecedorCommand.AtualizarForneecdor;
 using CasaDosFarelos.Application.Commands.FornecedorCommand.CriarFornecedor;
 using CasaDosFarelos.Application.Commands.FornecedorCommand.ExcluirFornecedor;
 using CasaDosFarelos.Application.Queries.Fornecedores.ObterFornecedorPorId;
@@ -19,7 +18,11 @@ public static class FornecedoresEndpoints
         group.MapPost("/", Criar);
         group.MapGet("/", Listar);
         group.MapGet("/{id:guid}", ObterPorId);
-        group.MapPut("/{id:guid}", Atualizar);
+
+        // ATUALIZAR (PF / PJ SEPARADOS)
+        group.MapPut("/pf/{id:guid}", AtualizarPF);
+        group.MapPut("/pj/{id:guid}", AtualizarPJ);
+
         group.MapDelete("/{id:guid}", Excluir);
 
         return app;
@@ -44,16 +47,31 @@ public static class FornecedoresEndpoints
         IMediator mediator)
     {
         var result = await mediator.Send(new ObterFornecedorPorIdQuery(id));
-        return result is null ? Results.NotFound() : Results.Ok(result);
+        return result is null
+            ? Results.NotFound()
+            : Results.Ok(result);
     }
 
-    private static async Task<IResult> Atualizar(
+    // PF
+    private static async Task<IResult> AtualizarPF(
         Guid id,
-        AtualizarFornecedorCommand command,
+        AtualizarFornecedorCommandPF command,
+        IMediator mediator,
+        CancellationToken ct)
+    {
+        var commandComId = command with { Id = id };
+
+        await mediator.Send(commandComId, ct);
+        return Results.NoContent();
+    }
+
+    // PJ
+    private static async Task<IResult> AtualizarPJ(
+        Guid id,
+        AtualizarFornecedorCommandPJ body,
         IMediator mediator)
     {
-        if (id != command.Id)
-            return Results.BadRequest();
+        var command = body with { Id = id };
 
         await mediator.Send(command);
         return Results.NoContent();

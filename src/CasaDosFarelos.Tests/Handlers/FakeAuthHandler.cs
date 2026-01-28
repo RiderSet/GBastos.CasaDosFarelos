@@ -9,12 +9,13 @@ namespace CasaDosFarelos.IntegrationTests.Handlers
     public class FakeAuthHandler
         : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        [Obsolete]
         public FakeAuthHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            ISystemClock clock)
-            : base(options, logger, encoder, clock) { }
+            TimeProvider clock)
+            : base(options, logger, encoder, (ISystemClock)clock) { }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {

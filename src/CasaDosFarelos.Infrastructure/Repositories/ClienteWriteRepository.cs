@@ -1,15 +1,34 @@
-﻿using CasaDosFarelos.Domain.Entities;
-using CasaDosFarelos.Application.Interfaces;
+﻿using CasaDosFarelos.Application.DTOs;
+using CasaDosFarelos.Application.Interfaces.Cliente;
+using CasaDosFarelos.Domain.Entities;
 using CasaDosFarelos.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
-public class ClienteWriteRepository : IClienteWriteRepository
+public class ClienteWriteRepository : IClienteReadRepository
 {
     private readonly AppDbContext _context;
 
     public ClienteWriteRepository(AppDbContext context)
     {
         _context = context;
+    }
+
+    public async Task<List<ClienteResponseDto>> GetAllAsync(
+        CancellationToken cancellationToken)
+    {
+        return await _context.Set<ClientePF>()
+            .AsNoTracking()
+            .Select(c => new ClienteResponseDto
+            {
+                Id = c.Id,
+                Nome = c.Nome,
+                Email = c.Email,
+                Documento = c.Documento,
+                Tipo = "PF",
+                CPF = c.CPF,
+                CNPJ = null
+            })
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<Guid> AdicionarAsync(

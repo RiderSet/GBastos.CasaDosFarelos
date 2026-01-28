@@ -8,11 +8,8 @@ public static class RelatoriosEndpoints
     public static IEndpointRouteBuilder MapRelatoriosEndpoints(
         this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/relatorios")
-                       .RequireAuthorization("Gerente");
-
+        var group = app.MapGroup("/api/relatorios").RequireAuthorization("Gerente");
         group.MapGet("/vendas", RelatorioVendas);
-
         return app;
     }
 
@@ -26,7 +23,6 @@ public static class RelatoriosEndpoints
             DataInicio = dataInicio,
             DataFim = dataFim
         };
-
         var resultado = await mediator.Send(query);
         return Results.Ok(resultado);
     }

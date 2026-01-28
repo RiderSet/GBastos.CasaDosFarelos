@@ -1,6 +1,6 @@
 ﻿using CasaDosFarelos.Application.DTOs;
 
-namespace CasaDosFarelos.Application.Interfaces
+namespace CasaDosFarelos.Application.Interfaces.Venda
 {
     public interface IRelatorioVendasHandler
     {

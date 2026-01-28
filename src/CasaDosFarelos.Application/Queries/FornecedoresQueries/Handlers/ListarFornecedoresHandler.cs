@@ -1,5 +1,4 @@
-﻿using CasaDosFarelos.Application.DTOs;
-using CasaDosFarelos.Application.Interfaces;
+﻿using CasaDosFarelos.Application.Interfaces.Fornecedores;
 using MediatR;
 
 namespace CasaDosFarelos.Application.Queries.FornecedoresQueries.Handlers;
@@ -18,6 +17,6 @@ namespace CasaDosFarelos.Application.Queries.FornecedoresQueries.Handlers;
         ListarFornecedoresQuery request,
         CancellationToken cancellationToken)
     {
-        return _repository.ListarAsync(cancellationToken);
+        return _repository.GetAllAsync(cancellationToken);
     }
 }

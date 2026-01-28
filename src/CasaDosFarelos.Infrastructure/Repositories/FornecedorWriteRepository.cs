@@ -1,4 +1,4 @@
-﻿using CasaDosFarelos.Application.Interfaces;
+﻿using CasaDosFarelos.Application.Interfaces.Fornecedores;
 using CasaDosFarelos.Domain.Entities;
 using CasaDosFarelos.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
@@ -14,20 +14,20 @@ namespace CasaDosFarelos.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Guid> CriarFornecedorAsync(Fornecedor fornecedor, CancellationToken cancellationToken)
+        public async Task<Guid> AddAsync(Fornecedor fornecedor, CancellationToken cancellationToken)
         {
             await _context.Set<Fornecedor>().AddAsync(fornecedor, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             return fornecedor.Id;
         }
 
-        public async Task AtualizarFornecedorAsync(Fornecedor fornecedor, CancellationToken cancellationToken)
+        public async Task UpdateAsync(Fornecedor fornecedor, CancellationToken cancellationToken)
         {
             _context.Set<Fornecedor>().Update(fornecedor);
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task ExcluirFornecedorAsync(Guid id, CancellationToken cancellationToken)
+        public async Task RemoveAsync(Guid id, CancellationToken cancellationToken)
         {
             var fornecedor = await _context.Set<Fornecedor>()
                 .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);

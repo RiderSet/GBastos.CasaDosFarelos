@@ -1,5 +1,5 @@
 ﻿using CasaDosFarelos.Application.DTOs;
-using CasaDosFarelos.Application.Interfaces;
+using CasaDosFarelos.Application.Interfaces.Venda;
 
 namespace CasaDosFarelos.Application.Commands.RelatoriosCommand;
 

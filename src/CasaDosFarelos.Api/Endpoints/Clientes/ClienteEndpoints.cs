@@ -149,7 +149,7 @@ public static class ClienteEndpoints
 
         if (clientePF is not null)
         {
-            clientePF.AtualizarDados(
+            clientePF.Update(
                 request.Nome,
                 request.Email,
                 request.Documento,
@@ -165,7 +165,7 @@ public static class ClienteEndpoints
 
         if (clientePJ is not null)
         {
-            clientePJ.AtualizarDados(
+            clientePJ.Update(
                 request.Nome,
                 request.Email,
                 request.Documento,
@@ -184,8 +184,9 @@ public static class ClienteEndpoints
         Guid id,
         AppDbContext context)
     {
-        var cliente = await context.Set<Pessoa>()
-            .FirstOrDefaultAsync(c => c.Id == id);
+        var cliente =
+            await context.Set<ClientePF>().FirstOrDefaultAsync(c => c.Id == id)
+            ?? (Pessoa?)await context.Set<ClientePJ>().FirstOrDefaultAsync(c => c.Id == id);
 
         if (cliente is null)
             return Results.NotFound();

@@ -1,5 +1,5 @@
-﻿using CasaDosFarelos.Application.DTOs;
-using CasaDosFarelos.Application.Interfaces;
+﻿using CasaDosFarelos.Application.Interfaces.Fornecedores;
+using CasaDosFarelos.Domain.Entities;
 using Dapper;
 using System.Data;
 
@@ -14,7 +14,7 @@ public class FornecedorReadRepository : IFornecedorReadRepository
         _connection = connection;
     }
 
-    public async Task<List<FornecedorResponseDto>> ListarAsync(
+    public async Task<List<FornecedorResponseDto>> GetAllAsync(
         CancellationToken cancellationToken)
     {
         const string sql = """
@@ -28,7 +28,7 @@ public class FornecedorReadRepository : IFornecedorReadRepository
 
         var lookup = new Dictionary<Guid, FornecedorResponseDto>();
 
-        await _connection.QueryAsync<FornecedorFlat, ProdutoResumoDto, FornecedorResponseDto>(
+        await _connection.QueryAsync<FornecedorFlat, Produto, FornecedorResponseDto>(
             sql,
             (f, produto) =>
             {
@@ -39,7 +39,7 @@ public class FornecedorReadRepository : IFornecedorReadRepository
                         f.Nome,
                         f.Email,
                         f.Documento,
-                        new List<ProdutoResumoDto>()
+                        new List<Produto>()
                     );
                     lookup.Add(f.Id, fornecedor);
                 }
@@ -55,11 +55,11 @@ public class FornecedorReadRepository : IFornecedorReadRepository
         return lookup.Values.ToList();
     }
 
-    public async Task<FornecedorResponseDto?> ObterPorIdAsync(
+    public async Task<FornecedorResponseDto?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken)
     {
-        var fornecedores = await ListarAsync(cancellationToken);
+        var fornecedores = await GetAllAsync(cancellationToken);
         return fornecedores.FirstOrDefault(f => f.Id == id);
     }
 

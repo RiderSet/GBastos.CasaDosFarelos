@@ -1,21 +1,21 @@
 ﻿using CasaDosFarelos.Application.DTOs;
-using CasaDosFarelos.Application.Interfaces;
+using CasaDosFarelos.Application.Interfaces.Cliente.PF;
 using MediatR;
 
-namespace CasaDosFarelos.Application.Queries.ClientesQueries.ObterClientePorId.Handlers
+namespace CasaDosFarelos.Application.Queries.ClientesQueries.ObterClientePorId.Handlers;
+
+public sealed class ObterClientePorIdHandler
+    : IRequestHandler<ObterClientePorIdQuery, ClienteResponseDto?>
 {
-    public class ObterClientePorIdHandler : IRequestHandler<ObterClientePorIdQuery, ClienteResponseDto?>
+    private readonly IClienteReadPFRepository _repository;
+
+    public ObterClientePorIdHandler(IClienteReadPFRepository repository)
+        => _repository = repository;
+
+    public async Task<ClienteResponseDto?> Handle(
+        ObterClientePorIdQuery request,
+        CancellationToken ct)
     {
-        private readonly IClienteReadRepository _repository;
-
-        public ObterClientePorIdHandler(IClienteReadRepository repository)
-        {
-            _repository = repository;
-        }
-
-        public Task<ClienteResponseDto?> Handle(ObterClientePorIdQuery request, CancellationToken cancellationToken)
-        {
-            return _repository.ObterClientePorIdAsync(request.Id, cancellationToken);
-        }
+        return await _repository.GetByIdAsync(request.Id, ct);
     }
 }

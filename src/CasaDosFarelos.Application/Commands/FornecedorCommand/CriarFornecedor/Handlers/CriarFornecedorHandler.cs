@@ -1,28 +1,42 @@
-﻿using CasaDosFarelos.Application.Interfaces;
+﻿using CasaDosFarelos.Application.Commands.FornecedorCommand.CriarFornecedor;
+using CasaDosFarelos.Application.Interfaces.Fornecedores;
+using CasaDosFarelos.Application.Interfaces.Produtos;
 using CasaDosFarelos.Domain.Entities;
 using MediatR;
 
-namespace CasaDosFarelos.Application.Commands.FornecedorCommand.CriarFornecedor.Handlers
+public sealed class CriarFornecedorHandler
+    : IRequestHandler<CriarFornecedorCommand, Guid>
 {
-    public class CriarFornecedorHandler : IRequestHandler<CriarFornecedorCommand, Guid>
+    private readonly IFornecedorWriteRepository _fornecedorRepo;
+    private readonly IProdutoRepository _produtoRepo;
+
+    public CriarFornecedorHandler(
+        IFornecedorWriteRepository fornecedorRepo,
+        IProdutoRepository produtoRepo)
     {
-        private readonly IFornecedorWriteRepository _repository;
+        _fornecedorRepo = fornecedorRepo;
+        _produtoRepo = produtoRepo;
+    }
 
-        public CriarFornecedorHandler(IFornecedorWriteRepository repository)
-        {
-            _repository = repository;
-        }
+    public async Task<Guid> Handle(
+        CriarFornecedorCommand command,
+        CancellationToken ct)
+    {
+        var produtos = await _produtoRepo
+            .ObterPorIdsAsync(command.ProdutosIds, ct);
 
-        public async Task<Guid> Handle(CriarFornecedorCommand request, CancellationToken cancellationToken)
-        {
-            var fornecedor = new Fornecedor(
-                request.Nome,
-                request.Email,
-                request.Documento,
-                new List<Produto>() // Você pode preencher com IDs reais se desejar
-            );
+        if (produtos.Count != command.ProdutosIds.Count)
+            throw new InvalidOperationException("Um ou mais produtos não encontrados");
 
-            return await _repository.CriarFornecedorAsync(fornecedor, cancellationToken);
-        }
+        var fornecedor = new Fornecedor(
+            command.Nome,
+            command.Email,
+            command.Documento,
+            produtos
+        );
+
+        await _fornecedorRepo.AddAsync(fornecedor, ct);
+
+        return fornecedor.Id;
     }
 }

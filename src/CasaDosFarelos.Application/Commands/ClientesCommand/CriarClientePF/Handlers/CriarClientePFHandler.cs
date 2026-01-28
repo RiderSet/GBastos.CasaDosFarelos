@@ -1,13 +1,15 @@
-﻿using CasaDosFarelos.Application.Interfaces;
+﻿using CasaDosFarelos.Application.Interfaces.Cliente;
 using CasaDosFarelos.Domain.Entities;
 using MediatR;
+
+namespace CasaDosFarelos.Application.Commands.ClientesCommand.CriarClientePF.Handlers;
 
 public class CriarClientePFHandler
     : IRequestHandler<CriarClientePFCommand, Guid>
 {
-    private readonly IClienteWriteRepository _repository;
+    private readonly IClienteWritePFRepository _repository;
 
-    public CriarClientePFHandler(IClienteWriteRepository repository)
+    public CriarClientePFHandler(IClienteWritePFRepository repository)
         => _repository = repository;
 
     public Task<Guid> Handle(
@@ -21,6 +23,6 @@ public class CriarClientePFHandler
             request.CPF
         );
 
-        return _repository.AdicionarAsync(cliente, cancellationToken);
+        return _repository.AddAsync(cliente, cancellationToken);
     }
 }

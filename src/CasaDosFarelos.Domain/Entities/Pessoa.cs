@@ -1,3 +1,4 @@
+
 namespace CasaDosFarelos.Domain.Entities;
 
 public abstract class Pessoa : Entity
@@ -15,7 +16,7 @@ public abstract class Pessoa : Entity
         Documento = documento;
     }
 
-    protected void AtualizarPessoa(
+    protected void Atualizar(
         string nome,
         string email,
         string documento)
@@ -42,13 +43,13 @@ public class ClientePF : Pessoa
         CPF = cpf;
     }
 
-    public void AtualizarDados(
+    public void Update(
         string nome,
         string email,
         string documento,
         string cpf)
     {
-        AtualizarPessoa(nome, email, documento);
+        Atualizar(nome, email, documento);
         CPF = cpf;
     }
 }
@@ -69,13 +70,13 @@ public class ClientePJ : Pessoa
         CNPJ = cnpj;
     }
 
-    public void AtualizarDados(
+    public void Update(
         string nome,
         string email,
         string documento,
         string cnpj)
     {
-        AtualizarPessoa(nome, email, documento);
+        Atualizar(nome, email, documento);
         CNPJ = cnpj;
     }
 }

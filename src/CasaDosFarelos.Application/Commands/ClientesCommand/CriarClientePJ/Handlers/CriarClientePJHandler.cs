@@ -1,14 +1,15 @@
-﻿using CasaDosFarelos.Application.Commands.Clientes;
-using CasaDosFarelos.Application.Interfaces;
+﻿using CasaDosFarelos.Application.Commands.ClientesCommand.CriarClientePJ;
+using CasaDosFarelos.Application.Interfaces.Cliente;
+using CasaDosFarelos.Application.Interfaces.Cliente.PJ;
 using CasaDosFarelos.Domain.Entities;
 using MediatR;
 
 public class CriarClientePJHandler
     : IRequestHandler<CriarClientePJCommand, Guid>
 {
-    private readonly IClienteWriteRepository _repository;
+    private readonly IClienteWritePJRepository _repository;
 
-    public CriarClientePJHandler(IClienteWriteRepository repository)
+    public CriarClientePJHandler(IClienteWritePJRepository repository)
         => _repository = repository;
 
     public Task<Guid> Handle(
@@ -22,6 +23,6 @@ public class CriarClientePJHandler
             request.CNPJ
         );
 
-        return _repository.AdicionarAsync(cliente, cancellationToken);
+        return _repository.AddAsync(cliente, cancellationToken);
     }
 }

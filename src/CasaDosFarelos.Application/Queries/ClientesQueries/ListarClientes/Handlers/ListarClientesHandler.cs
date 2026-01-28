@@ -1,12 +1,12 @@
 ﻿using CasaDosFarelos.Application.DTOs;
-using CasaDosFarelos.Application.Interfaces;
+using CasaDosFarelos.Application.Interfaces.Cliente.PF;
 using MediatR;
 
 public class ListarClientesHandler : IRequestHandler<ListarClientesQuery, List<ClienteResponseDto>>
 {
-    private readonly IClienteReadRepository _repository;
+    private readonly IClienteReadPFRepository _repository;
 
-    public ListarClientesHandler(IClienteReadRepository repository)
+    public ListarClientesHandler(IClienteReadPFRepository repository)
     {
         _repository = repository;
     }
@@ -15,6 +15,6 @@ public class ListarClientesHandler : IRequestHandler<ListarClientesQuery, List<C
         ListarClientesQuery request,
         CancellationToken cancellationToken)
     {
-        return _repository.ListarClientesAsync(cancellationToken);
+        return _repository.GetAllAsync(cancellationToken);
     }
 }

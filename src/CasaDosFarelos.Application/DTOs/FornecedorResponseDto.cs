@@ -1,4 +1,4 @@
-﻿using CasaDosFarelos.Application.DTOs;
+﻿using CasaDosFarelos.Domain.Entities;
 
 public class FornecedorResponseDto
 {
@@ -6,19 +6,30 @@ public class FornecedorResponseDto
     public string Nome { get; init; } = default!;
     public string Email { get; init; } = default!;
     public string Documento { get; init; } = default!;
-    public List<ProdutoResumoDto> Produtos { get; init; } = new();
+    public List<Produto> Produtos { get; init; } = new();
 
     public FornecedorResponseDto(
         Guid id,
         string nome,
         string email,
         string documento,
-        List<ProdutoResumoDto> produtos)
+        List<Produto> produtos)
     {
         Id = id;
         Nome = nome;
         Email = email;
         Documento = documento;
         Produtos = produtos;
+    }
+
+    internal FornecedorResponseDto UpdateName(string nome)
+    {
+        return new FornecedorResponseDto(
+            id: Id,
+            nome: nome,
+            email: Email,
+            documento: Documento,
+            produtos: Produtos
+        );
     }
 }

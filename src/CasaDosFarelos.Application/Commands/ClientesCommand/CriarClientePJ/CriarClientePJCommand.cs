@@ -1,15 +1,23 @@
 ﻿using MediatR;
 
-namespace CasaDosFarelos.Application.Commands.Clientes
+namespace CasaDosFarelos.Application.Commands.ClientesCommand.CriarClientePJ;
+
+public sealed class CriarClientePJCommand : IRequest<Guid>
 {
-    /// <summary>
-    /// Comando para criar um Cliente PJ
-    /// </summary>
-    public class CriarClientePJCommand : IRequest<Guid>
+    public string Nome { get; }
+    public string Email { get; }
+    public string Documento { get; }
+    public string CNPJ { get; }
+
+    public CriarClientePJCommand(
+        string nome,
+        string email,
+        string documento,
+        string cnpj)
     {
-        public string Nome { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Documento { get; set; } = string.Empty;
-        public string CNPJ { get; set; } = string.Empty;
+        Nome = nome;
+        Email = email;
+        Documento = documento;
+        CNPJ = cnpj;
     }
 }
